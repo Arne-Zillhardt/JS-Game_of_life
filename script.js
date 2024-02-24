@@ -1,8 +1,10 @@
 let board = null;
 let colors = [];
 let end = false;
-const height = 35;
-const width = 50;
+let started = false;
+let execute = null;
+const height = 50;
+const width = 160;
 
 class Cell {
     constructor(x, y) {
@@ -41,14 +43,16 @@ class Cell {
 
 function setAliveCells() {
     let aliveLocations = new Array();
+    let middleX = Math.ceil(width / 2);
+    let middleY = Math.ceil(height / 2);
 
-    aliveLocations.push(new Cell(11, 11));
-    aliveLocations.push(new Cell(12, 11));
-    aliveLocations.push(new Cell(13, 11));
-    aliveLocations.push(new Cell(8, 11));
-    aliveLocations.push(new Cell(7, 11));
-    aliveLocations.push(new Cell(10, 10));
-    aliveLocations.push(new Cell(8, 9));
+    aliveLocations.push(new Cell(middleX, middleY - 1));
+    aliveLocations.push(new Cell(middleX - 2, middleY));
+    aliveLocations.push(new Cell(middleX - 3, middleY));
+    aliveLocations.push(new Cell(middleX + 1, middleY));
+    aliveLocations.push(new Cell(middleX + 2, middleY));
+    aliveLocations.push(new Cell(middleX + 3, middleY));
+    aliveLocations.push(new Cell(middleX - 2, middleY - 2));
 
     /*aliveLocations.push(new Location(10, 0));
     aliveLocations.push(new Location(10, 1));
@@ -74,7 +78,7 @@ function printCells() {
     for (let i = 0; i <= width; i++) {
         for (let j = 0; j <= height; j++) {
             let element = document.getElementById(i + "_" + j);
-            element.style.backgroundColor = "white";
+            element.style.backgroundColor = "#181818";
 
             if (board[i][j].alive) {
                 let color = colors[board[i][j].cycle];
@@ -150,20 +154,34 @@ function boardsAreEqual(board1, board2) {
     return true;
 }
 
-function start() {
+function init() {
     initBoard();
     setAliveCells();
     printCells();
-    setInterval(function() {
-        printCells();
-        nextGeneration();
+}
 
-        if (end) {
-            initBoard();
-            setAliveCells();
-            end = false;
-        }
-    }, 150);
+function start() {
+    if (started) {
+        clearInterval(execute);
+        started = false;
+        document.getElementById("start-button").innerHTML = "Start";
+        return;
+    }
+
+    execute = setInterval(executeGameOfLife, 150);
+    started = true;
+    document.getElementById("start-button").innerHTML = "Stop";
+}
+
+function executeGameOfLife() {
+    printCells();
+    nextGeneration();
+
+    if (end) {
+        initBoard();
+        setAliveCells();
+        end = false;
+    }
 }
 
 function initBoard() {
@@ -174,4 +192,43 @@ function initBoard() {
             board[i][j] = new Cell(i, j);
         }
     }
+}
+
+function hoverInCell(x, y) {
+    if (board == null || board[x][y] == null) {
+        return;
+    }
+
+    let element = document.getElementById(x + "_" + y);
+    element.style.backgroundColor = "#6b6b6b";
+}
+
+function hoverOutCell(x, y) {
+    if (board == null || board[x][y] == null) {
+        return;
+    }
+
+    let element = document.getElementById(x + "_" + y);
+    element.style.backgroundColor = "#181818";
+    printCells();
+}
+
+function cellSpawn(x, y) {
+    if (board[x][y].alive) {
+        board[x][y].alive = false;
+        board[x][y].cycle = -1;
+    }
+
+    if (!board[x][y].alive) {
+        board[x][y].alive = true;
+        board[x][y].cycle = 0;
+    }
+
+    printCells();
+}
+
+function reset() {
+    initBoard();
+    setAliveCells();
+    printCells();
 }

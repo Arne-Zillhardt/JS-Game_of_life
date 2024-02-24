@@ -4,20 +4,23 @@
 <link  rel="stylesheet" href="style.css">
 </head>
 
-<body onload="start()">
+<body onload="init()">
 <h1 class="project-headline">Game Of Life</h1>
     <p class="project-paragraph">Conways game of life</p>
     <table class="gol-table">
         <?php
-            for($i = 0; $i <= 35; $i++){
+            for($i = 0; $i <= 50; $i++){
                 echo "<tr>";
-                for($j = 0; $j <= 50; $j++){
-                    echo "<td id=\"". $j ."_". $i ."\" class=\"cell\" onmousedown=\"cellSpawn($j, $i)\"></td>";
+                for($j = 0; $j <= 160; $j++){
+                    echo "<td id=\"". $j ."_". $i ."\" class=\"cell\" onmouseenter=\"hoverInCell($j, $i)\" onmouseleave=\"hoverOutCell($j, $i)\" onmousedown=\"cellSpawn($j, $i)\"></td>";
                 }
                 echo "</tr>";
             }
         ?>
     </table>
 
-    <button class="reset-button" onclick="initBoard()">RESET</button>
+    <div class="buttons">
+    <button class="reset-button" id="start-button" onclick="start()">Start</button>
+    <button class="reset-button" onclick="reset()">RESET</button>
+    </div>
 </body>
